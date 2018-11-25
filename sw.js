@@ -9,6 +9,8 @@ self.addEventListener('install', function(event) {
         try 
         {
             return cache.addAll([
+                '/',
+                '/sw.js',
                 '/index.html',
                 '/restaurant.html',
                 '/restaurant.html?id=1',
@@ -22,6 +24,7 @@ self.addEventListener('install', function(event) {
                 '/restaurant.html?id=9',
                 '/restaurant.html?id=10',
                 '/css/styles.css',
+                '/js/idb.js',
                 '/js/dbhelper.js',
                 '/js/main.js',
                 '/js/restaurant_info.js',
@@ -36,6 +39,9 @@ self.addEventListener('install', function(event) {
                 '/img/8.jpg',
                 '/img/9.jpg',
                 '/img/10.jpg',
+                '/img/favicon.ico',
+                '/data/img/steak.png',
+                '/data/manifest.json'
               ])
               .then(function() {
                 return self.skipWaiting();
