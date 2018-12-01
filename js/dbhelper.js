@@ -1,7 +1,16 @@
 // instantiate idb variable for promises
 // idb promise library by https://github.com/jakearchibald/idb
-var dbPromise = idb.open('restaurant-idb', 1, function(upgradeDB) {
-        upgradeDB.createObjectStore('restaurants', {keypath: 'id'});
+var dbPromise = idb.open('restaurant-idb', 2, function(upgradeDB) {
+    switch (upgradeDB.oldVersion) {
+        case 0: {
+            upgradeDB.createObjectStore('restaurants', {keypath: 'id'});
+        }
+        case 1: {
+            const reviewDB = upgradeDB.createObjectStore('reviews', {autoIncrement: true});
+            reviewDB.createIndex('restaurant_id', 'restaurant_id')
+        }
+    }
+
 });
 
 /**
@@ -16,6 +25,11 @@ class DBHelper {
   static get DATABASE_URL() {
     const port = 1337 // Change this to your server port
     return `http://localhost:${port}/restaurants`;
+  }
+
+  static get DATABASE_URL_REVIEWS() {
+    const port = 1337
+    return `http://localhost:${port}/reviews`;
   }
 
   /**
@@ -163,6 +177,36 @@ class DBHelper {
   }
 
   /**
+ * Fetch all reviews
+ */
+  static fetchReviews(id, callback) {
+    fetch(DBHelper.DATABASE_URL_REVIEWS + `/?restaurant_id=${id}`)
+      .then(response => response.json())
+      .then(data => callback(null, data))
+      .catch(e => callback(e, null));
+  }
+
+  /**
+   * Create restaurant review
+   */
+  static createRestaurantReview(id, name, rating, comments, callback) {
+    const data = {
+      'restaurant_id': id,
+      'name': name,
+      'rating': rating,
+      'comments': comments
+    };
+    fetch(DBHelper.DATABASE_URL_REVIEWS + '/', {
+      headers: { 'Content-Type': 'application/form-data' },
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(data => callback(null, data))
+      .catch(err => callback(err, null));
+  }
+
+  /**
    * Restaurant page URL.
    */
   static urlForRestaurant(restaurant) {
@@ -200,5 +244,19 @@ class DBHelper {
     return marker;
   } */
 
+  static setToFavorite(id) {
+    fetch(`${DBHelper.DATABASE_URL}/${id}/?is_favorite=true`, {
+      method: 'PUT'
+    });
+  }
+
+// http://localhost:1337/restaurants/<restaurant_id>/?is_favorite=false
+static removeFromFavorites(id) {
+    fetch(`${DBHelper.DATABASE_URL}/${id}/?is_favorite=false`, {
+      method: 'PUT'
+    });
+  }
+
 }
 
+window.DBHelper = DBHelper;

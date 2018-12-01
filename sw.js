@@ -1,5 +1,5 @@
 // Service Work Cache
-const swCache = 'restaurant-review-0001';
+const swCache = 'restaurant-review-0003';
 
 // Service Worker Listener
 self.addEventListener('install', function(event) {
@@ -76,3 +76,4 @@ self.addEventListener('activate', function(event) {
   // activate listener on initial page load
   event.waitUntil(self.clients.claim());
 });
+

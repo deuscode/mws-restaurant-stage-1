@@ -267,6 +267,7 @@ nav h1 a {
   color: #666;
 }
 
+
 /* ====================== Media Queries ====================== */
 @media screen and (min-width: 980px) {
   #restaurant-container, #reviews-container {
@@ -275,3 +276,48 @@ nav h1 a {
     margin-right: auto;
   }
 }
+
+/* ====================== Favorite Button ==================== */
+#restaurant-img-container {
+  display: flex;
+  flex-direction: column;
+}
+#restaurants-list .fav-button {
+  width: 64px;
+  height: 64px;
+  position: relative;
+  text-indent: -10000px;
+  align-self: flex-end;
+  cursor: pointer;
+  background-image: url("../img/favstar-unselected.png");
+  background-position: 15px 15px;
+  background-repeat: no-repeat;
+  background-size: 32px;
+}
+#restaurants-list .fav-button.active  {
+  background-image: url("../img/favstar-selected.png");
+}
+#restaurants-list .fav-button:hover {
+  background-image: url("../img/favstar-hover.png");
+}
+#restaurant-fav {
+  width: 64px;
+  height: 64px;
+  text-indent: -10000px;
+  position: relative;
+  align-self: flex-end;
+  cursor: pointer;
+  background-image: url("../img/favstar-unselected.png");
+}
+#restaurant-fav.active {
+  background-image: url("../img/favstar-selected.png");
+}
+#restaurant-fav:hover {
+  background-image: url("../img/favstar-hover.png");
+}
+/* =================== Review Form ==================*/
+#review-box {
+  margin: 0 auto;
+  width: 70%;
+}
+
