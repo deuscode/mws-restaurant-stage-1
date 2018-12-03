@@ -25,6 +25,7 @@ self.addEventListener('install', function(event) {
                 '/restaurant.html?id=10',
                 '/css/styles.css',
                 '/js/idb.js',
+                '/js/idbhelper.js',
                 '/js/dbhelper.js',
                 '/js/main.js',
                 '/js/restaurant_info.js',
@@ -76,4 +77,3 @@ self.addEventListener('activate', function(event) {
   // activate listener on initial page load
   event.waitUntil(self.clients.claim());
 });
-
