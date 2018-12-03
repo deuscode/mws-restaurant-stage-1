@@ -57,20 +57,28 @@ self.addEventListener('install', function(event) {
 
 // fetch response for index.html
 self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      return response || fetch(event.request).then(async function(fetchResponse) {
-        const cache = await caches.open(swCache);
-          cache.put(event.request, fetchResponse.clone());
-          return fetchResponse;
-      });
-    }).catch(function(error) {
-        return new Response('Please connect to the internet to view this page', {
-        status: 404,
-        statusText: "No Connection..."
-      });
-    })
-  );
+  if (event.request.method !== 'GET') {
+    event.respondWith (
+      fetch(event.request.clone()).catch(function(error) {
+        saveRequest(event.request.clone().url, favorite_status)
+      })
+    )
+  } else {
+      event.respondWith(
+        caches.match(event.request).then(function(response) {
+          return response || fetch(event.request).then(async function(fetchResponse) {
+            const cache = await caches.open(swCache);
+              cache.put(event.request, fetchResponse.clone());
+              return fetchResponse;
+          });
+        }).catch(function(error) {
+            return new Response('Please connect to the internet to view this page', {
+            status: 404,
+            statusText: "No Connection..."
+          });
+        })
+      );
+    }
 });
 
 self.addEventListener('activate', function(event) {

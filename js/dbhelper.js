@@ -240,6 +240,13 @@ class DBHelper {
       });
   }
 
+  static getObjectStore(storeName, mode) {
+    return dbPromise.then(db => {
+      const tx = db.transaction(storeName, mode).objectStore(storeName)
+      return tx;
+    })
+  }
+
   static queueData(url, headers, method, data, review_id) {
     const request = {
       url: url,
@@ -357,14 +364,44 @@ class DBHelper {
   static setToFavorite(id) {
     fetch(`${DBHelper.DATABASE_URL}/${id}/?is_favorite=true`, {
       method: 'PUT'
-    });
+    }).catch(err => console.log(err));
   }
 
   static removeFromFavorites(id) {
     fetch(`${DBHelper.DATABASE_URL}/${id}/?is_favorite=false`, {
       method: 'PUT'
-    });
+    }).catch(err => console.log(err));
+  }
+
+  static setFavorites(restaurant, callback) {
+    const is_favorite = JSON.parse(restaurant.is_favorite);
+    const id = +restaurant.id;
+    restaurant.is_favorite = !is_favorite;
+
+    const url = `${DBHelper.DATABASE_URL}/${id}/?is_favorite=${!is_favorite}`;
+    const method = 'PUT';
+
+    fetch(url, {
+      method: method
+    })
+      .then(response => response.json())
+      .then(data => callback(null, data))
+      .catch(err => {
+        DBHelper.updateRestIDB(restaurant)
+        console.log("UpdatedRestIDB")
+          .then(() => {
+            DBHelper.queueData(url, {}, method, '')
+              .then(offline_id => console.log('returned offline_id', offline_id));
+          });
+        callback(err, null);
+      });
+  }
+
+  static async updateRestIDB(restaurant) {
+    const db = await dbPromise;
+    const tx = db.transaction('restaurants', 'readwrite');
+    tx.objectStore('restaurants').put(restaurant, restaurant.id);
+    return tx.complete;
   }
 }
 
-window.DBHelper = DBHelper;

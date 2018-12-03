@@ -196,21 +196,8 @@ createRestaurantHTML = (restaurant) => {
     favorites.title = `Make ${restaurant.name} your fav!`;
   }
   favorites.addEventListener('click', (event) => {
-    event.preventDefault();
-    if (favorites.classList.contains('active')) {
-      favorites.setAttribute('aria-pressed', 'false');
-      favorites.innerHTML = `Make ${restaurant.name} your fav!`;
-      favorites.title = `Make ${restaurant.name} your fav!`;
-      DBHelper.removeFromFavorites(restaurant.id);
-      console.log("test")
-    } else {
-      favorites.setAttribute('aria-pressed', 'true');
-      favorites.innerHTML = `Un-Fav ${restaurant.name} :(`;
-      favorites.title = `Un-Fav ${restaurant.name} :(`;
-      DBHelper.setToFavorite(restaurant.id);
-    }
-    favorites.classList.toggle('active');
-  });
+    favoriteHandler(event, favorites, restaurant);
+  }, false);
   li.append(favorites);
   return li
 }
@@ -253,10 +240,6 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     console.log(`Service worker failed to register, error: ${error}`);
   });
 }
-
-window.addEventListener('load', function () {
-  DBHelper.processOfflineData();
-});
 
 const getParameterByName = (name, url) => {
   if (!url)
