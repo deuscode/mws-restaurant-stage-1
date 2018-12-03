@@ -288,42 +288,32 @@ class DBHelper {
         })
           .then(response => response.json())
           .then(data => {
-            console.log('Received updated record from DB Server', data);
             dbPromise.then(db => {
               const tx = db.transaction(['offlineData'], 'readwrite');
               tx.objectStore('offlineData').delete(offline_id);
               return tx.complete;
             })
               .then(() => {
-                // 2. Add new review record to reviews store
-                // 3. Delete old review record from reviews store 
                 dbPromise.then(db => {
                   const tx = db.transaction(['reviews'], 'readwrite');
                   return tx.objectStore('reviews').put(data)
                     .then(() => tx.objectStore('reviews').delete(review_id))
                     .then(() => {
-                      console.log('tx complete reached.');
                       return tx.complete;
                     })
                     .catch(err => {
                       tx.abort();
-                      console.log('transaction error: tx aborted', err);
+                      console.log('transaction error, transaction aborted', err);
                     });
                 })
-                  .then(() => console.log('review transaction success!'))
-                  .catch(err => console.log('reviews store error', err));
               })
-              .then(() => console.log('offline rec delete success!'))
-              .catch(err => console.log('offline store error', err));
           }).catch(err => {
-            console.log('fetch error. we are offline.');
             console.log(err);
             return;
           });
         return cursor.continue().then(nextRequest);
       })
-      .then(() => console.log('Done cursoring'))
-      .catch(err => console.log('Error opening cursor', err));
+      .catch(err => console.log('Error', err));
   }
 
   /**
